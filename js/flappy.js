@@ -1,4 +1,15 @@
-//import { setInterval } from "timers"
+let novoJogo = false
+const personagens = [
+    'imgs/passaro.png',
+    'imgs/thiago.png'
+]
+
+const nomesPersonagens = [
+    'Passaro',
+    'Thiago'
+]
+
+let personagemSelecionado = 0
 
 function novoElemento(tagName, className){
     const elem = document.createElement(tagName)
@@ -60,7 +71,7 @@ function Barreiras(altura, largura, abertura, espaco, notificarPonto){
             if(par.getX() < -par.getLargura())
             {
                 par.setX(par.getX() + espaco * this.pares.length)
-                par.sortearAbertur()
+                par.sortearAbertura()
             }
 
             const meio = largura / 2
@@ -78,7 +89,7 @@ function Passaro(alturaJogo){
     let voando = false
 
     this.elemento = novoElemento('img', 'passaro')
-    this.elemento.src = 'imgs/passaro.png'
+    this.elemento.src = personagens[personagemSelecionado]
 
     this.getY = () => parseInt(this.elemento.style.bottom.split('px')[0])
     this.setY = y => this.elemento.style.bottom = `${y}px`
@@ -87,7 +98,7 @@ function Passaro(alturaJogo){
     window.onkeyup = e => voando = false
 
     this.animar = () => {
-        const novoY = this.getY() + (voando ? 8 : -5)
+        const novoY = this.getY() + (voando ? 10 : -6)
         const alturaMaxima = alturaJogo - this.elemento.clientHeight
 
         if(novoY <= 0)
@@ -143,6 +154,103 @@ function Colidiu(passaro, barreiras){
     return colidiu
 }
 
+function CriarMenu(){
+    let pontos = 0
+
+    const areaDoJogo = document.querySelector('[wm-flappy]')
+    const btnNovoJogo = novoElemento('button', 'botaoNovoJogo')
+    btnNovoJogo.innerHTML = "Novo Jogo"
+    areaDoJogo.appendChild(btnNovoJogo)
+    
+    const evento = document.querySelector('button')
+    evento.setAttribute('onclick', 'NovoJogo()')
+
+    const progresso = new Progresso()
+    areaDoJogo.appendChild(progresso.elemento)
+    progresso.elemento.style.display = 'none'
+
+
+    const altura = areaDoJogo.clientHeight
+    const largura = areaDoJogo.clientWidth
+    const barreiras = new Barreiras(altura, largura, 250, 400, 
+        () => progresso.atualizarPontos(++pontos))
+    barreiras.pares.forEach(par => areaDoJogo.appendChild(par.elemento))
+    
+    const dropPersonagens = novoElemento('select', 'personagens')
+    let incremento = 0
+    personagens.forEach(personagem => {
+        personagem = novoElemento('option')
+        personagem.innerHTML = nomesPersonagens[incremento]
+        dropPersonagens.appendChild(personagem)
+        incremento++
+    })
+    areaDoJogo.appendChild(dropPersonagens)
+    const drop = document.querySelector('select')
+    drop.setAttribute('onchange', 'SelecionarPersonagem()')
+
+    const temporizadorMenu = setInterval(() => {
+        barreiras.animar()
+
+        if(novoJogo)
+        {
+            clearInterval(temporizadorMenu)
+            areaDoJogo.removeChild(btnNovoJogo)
+            areaDoJogo.removeChild(progresso.elemento)
+            areaDoJogo.removeChild(dropPersonagens)
+            barreiras.pares.forEach(par => areaDoJogo.removeChild(par.elemento))
+            new FlappyBird().start()
+        }
+
+    }, 20)
+}
+
+function SelecionarPersonagem(){
+    const drop = document.querySelector('select')
+    personagemSelecionado = drop.selectedIndex
+}
+
+function NovoJogo(){
+    novoJogo = true
+}
+
+function ReiniciarJogo(){
+    const areaDoJogo = document.querySelector('[wm-flappy]')
+    const novaArea = areaDoJogo.cloneNode(false)
+    const body = document.querySelector('body')
+    body.removeChild(areaDoJogo)
+    body.appendChild(novaArea)
+    new FlappyBird().start()
+}
+
+function CriarReinicio(pontos){
+    const areaDoJogo = document.querySelector('[wm-flappy]')
+    const btnReiniciar = novoElemento('button', 'botaoNovoJogo')
+    btnReiniciar.innerHTML = "Reiniciar"
+    areaDoJogo.appendChild(btnReiniciar)
+    
+    const evento = document.querySelector('button')
+    evento.setAttribute('onclick', 'ReiniciarJogo()')
+
+    const placar = novoElemento('div', 'divPontosFinal')
+    const h1 = novoElemento('h1')
+    h1.innerHTML = pontos
+    placar.appendChild(h1)
+    areaDoJogo.appendChild(placar)
+
+    const dropPersonagens = novoElemento('select', 'personagens')
+    let incremento = 0
+    personagens.forEach(personagem => {
+        personagem = novoElemento('option')
+        personagem.innerHTML = nomesPersonagens[incremento]
+        dropPersonagens.appendChild(personagem)
+        incremento++
+    })
+    areaDoJogo.appendChild(dropPersonagens)
+    const drop = document.querySelector('select')
+    drop.setAttribute('onchange', 'SelecionarPersonagem()')
+    drop.selectedIndex = personagemSelecionado
+}
+
 function FlappyBird(){
     let pontos = 0
 
@@ -167,10 +275,11 @@ function FlappyBird(){
             if(Colidiu(passaro, barreiras))
             {
                 clearInterval(temporizador)
+                CriarReinicio(pontos)
             }
         }, 20)
     }
 
 }
 
-new FlappyBird().start()
+new CriarMenu()
