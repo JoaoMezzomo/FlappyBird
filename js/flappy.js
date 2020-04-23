@@ -1,15 +1,25 @@
 let novoJogo = false
 const personagens = [
     'imgs/passaro.png',
-    'imgs/thiago.png'
+    'imgs/superman.png',
+    'imgs/mario.png',
+    'imgs/megaman.png',
+    'imgs/pikachu.png',
+    'imgs/yoshi.png'
 ]
 
 const nomesPersonagens = [
-    'Passaro',
-    'Thiago'
+    '1) Passaro',
+    '2) Superman',
+    '3) Mario',
+    '4) Megaman',
+    '5) Pikachu',
+    '6) Yoshi'
 ]
 
 let personagemSelecionado = 0
+
+let personagemMenu
 
 function novoElemento(tagName, className){
     const elem = document.createElement(tagName)
@@ -184,9 +194,15 @@ function CriarMenu(){
         dropPersonagens.appendChild(personagem)
         incremento++
     })
+
     areaDoJogo.appendChild(dropPersonagens)
     const drop = document.querySelector('select')
     drop.setAttribute('onchange', 'SelecionarPersonagem()')
+
+    const imgPersonagem = novoElemento('img', 'personagemMenu')
+    imgPersonagem.src = personagens[personagemSelecionado]
+    areaDoJogo.appendChild(imgPersonagem)
+    personagemMenu = imgPersonagem
 
     const temporizadorMenu = setInterval(() => {
         barreiras.animar()
@@ -197,6 +213,7 @@ function CriarMenu(){
             areaDoJogo.removeChild(btnNovoJogo)
             areaDoJogo.removeChild(progresso.elemento)
             areaDoJogo.removeChild(dropPersonagens)
+            areaDoJogo.removeChild(imgPersonagem)
             barreiras.pares.forEach(par => areaDoJogo.removeChild(par.elemento))
             new FlappyBird().start()
         }
@@ -207,6 +224,7 @@ function CriarMenu(){
 function SelecionarPersonagem(){
     const drop = document.querySelector('select')
     personagemSelecionado = drop.selectedIndex
+    personagemMenu.src = personagens[personagemSelecionado]
 }
 
 function NovoJogo(){
@@ -237,6 +255,11 @@ function CriarReinicio(pontos){
     placar.appendChild(h1)
     areaDoJogo.appendChild(placar)
 
+    const imgPersonagem = novoElemento('img', 'personagemMenu')
+    imgPersonagem.src = personagens[personagemSelecionado]
+    areaDoJogo.appendChild(imgPersonagem)
+    personagemMenu = imgPersonagem
+
     const dropPersonagens = novoElemento('select', 'personagens')
     let incremento = 0
     personagens.forEach(personagem => {
@@ -249,6 +272,30 @@ function CriarReinicio(pontos){
     const drop = document.querySelector('select')
     drop.setAttribute('onchange', 'SelecionarPersonagem()')
     drop.selectedIndex = personagemSelecionado
+}
+
+function DerrubarPersonagem(personagem, pontos){
+    const areaDoJogo = document.querySelector('[wm-flappy]')
+    const altura = areaDoJogo.clientHeight
+
+    this.getY = () => parseInt(personagem.style.bottom.split('px')[0])
+    this.setY = y => personagem.style.bottom = `${y}px`
+
+    
+    const temporizador = setInterval(() => {
+        let novoY = getY() + (-6)
+        
+        if(novoY <= 0)
+        {
+            this.setY(0)
+            clearInterval(temporizador)
+            CriarReinicio(pontos)
+        }
+        else
+        {
+            this.setY(novoY)
+        }
+    }, 20)
 }
 
 function FlappyBird(){
@@ -275,7 +322,7 @@ function FlappyBird(){
             if(Colidiu(passaro, barreiras))
             {
                 clearInterval(temporizador)
-                CriarReinicio(pontos)
+                DerrubarPersonagem(passaro.elemento, pontos)
             }
         }, 20)
     }
