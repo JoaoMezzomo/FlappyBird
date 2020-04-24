@@ -1,20 +1,14 @@
 let novoJogo = false
+let voando = false
+
 const personagens = [
     'imgs/passaro.png',
-    'imgs/superman.png',
-    'imgs/mario.png',
-    'imgs/megaman.png',
-    'imgs/pikachu.png',
-    'imgs/yoshi.png'
+    'imgs/superman.png'
 ]
 
 const nomesPersonagens = [
     '1) Passaro',
-    '2) Superman',
-    '3) Mario',
-    '4) Megaman',
-    '5) Pikachu',
-    '6) Yoshi'
+    '2) Superman'
 ]
 
 let personagemSelecionado = 0
@@ -96,8 +90,6 @@ function Barreiras(altura, largura, abertura, espaco, notificarPonto){
 }
 
 function Passaro(alturaJogo){
-    let voando = false
-
     this.elemento = novoElemento('img', 'passaro')
     this.elemento.src = personagens[personagemSelecionado]
 
@@ -123,8 +115,6 @@ function Passaro(alturaJogo){
         {
             this.setY(novoY)
         }
-
-
     }
 
     this.setY(alturaJogo / 2)
@@ -298,6 +288,14 @@ function DerrubarPersonagem(personagem, pontos){
     }, 20)
 }
 
+function VoarBtn(){
+    voando = true
+}
+
+function NaoVoarBtn(){
+    voando = false
+}
+
 function FlappyBird(){
     let pontos = 0
 
@@ -313,8 +311,17 @@ function FlappyBird(){
     areaDoJogo.appendChild(progresso.elemento)
     areaDoJogo.appendChild(passaro.elemento)
     barreiras.pares.forEach(par => areaDoJogo.appendChild(par.elemento))
+    
+    const btnVoar = novoElemento('button', 'botaoVoar')
+    btnVoar.innerHTML = '⬆'
+    areaDoJogo.appendChild(btnVoar)
+    const btnVoarElement = document.querySelector('button')
+    btnVoarElement.setAttribute('onmousedown', 'VoarBtn()')
+    btnVoarElement.setAttribute('onmouseup', 'NaoVoarBtn()')
+
 
     this.start = () => {
+        voando = false
         const temporizador = setInterval(() => {
             barreiras.animar()
             passaro.animar()
@@ -322,6 +329,7 @@ function FlappyBird(){
             if(Colidiu(passaro, barreiras))
             {
                 clearInterval(temporizador)
+                areaDoJogo.removeChild(btnVoarElement)
                 DerrubarPersonagem(passaro.elemento, pontos)
             }
         }, 20)

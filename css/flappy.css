@@ -81,6 +81,25 @@
     box-shadow: 1px 1px 1px #000;
 }
 
+.botaoVoar{
+    position: absolute;
+    z-index: 100;
+    background: linear-gradient(90deg, #639301, #A5E82E);
+    bottom: calc(50% - 85px);
+    width: 270px;
+    height: 170px;
+    left:calc(10% - 85px);
+    font-family: 'Oswald';
+    src: url('../fonts/Oswald-Regular.ttf') format('truetype');
+    font-size: 100px;
+    font-style: inherit;
+    color: #fff;
+    border: 5px solid #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000;
+}
+
 button:hover{
     background: linear-gradient(90deg, rgb(49, 48, 48), #2c2727);
 }
