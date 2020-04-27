@@ -304,7 +304,7 @@ function FlappyBird(){
     const largura = areaDoJogo.clientWidth
 
     const progresso = new Progresso()
-    const barreiras = new Barreiras(altura, largura, 250, 400,
+    const barreiras = new Barreiras(altura, largura, altura / 2, 400,
         () => progresso.atualizarPontos(++pontos))
     const passaro = new Passaro(altura)
 
