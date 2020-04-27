@@ -311,14 +311,14 @@ function FlappyBird(){
     areaDoJogo.appendChild(progresso.elemento)
     areaDoJogo.appendChild(passaro.elemento)
     barreiras.pares.forEach(par => areaDoJogo.appendChild(par.elemento))
-    
-    const btnVoar = novoElemento('button', 'botaoVoar')
-    btnVoar.innerHTML = '⬆'
-    areaDoJogo.appendChild(btnVoar)
-    const btnVoarElement = document.querySelector('button')
-    btnVoarElement.setAttribute('onmousedown', 'VoarBtn()')
-    btnVoarElement.setAttribute('onmouseup', 'NaoVoarBtn()')
 
+    const body = document.querySelector('body')
+    body.addEventListener('pointerdown', (event) => {
+        VoarBtn()
+    })
+    body.addEventListener('pointerup', (event) => {
+        NaoVoarBtn()
+    })
 
     this.start = () => {
         voando = false
@@ -329,7 +329,6 @@ function FlappyBird(){
             if(Colidiu(passaro, barreiras))
             {
                 clearInterval(temporizador)
-                areaDoJogo.removeChild(btnVoarElement)
                 DerrubarPersonagem(passaro.elemento, pontos)
             }
         }, 20)
