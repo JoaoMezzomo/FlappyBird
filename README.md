@@ -1,4 +1,4 @@
-Projeto FlappyBird
+Projeto FlappyFly
 ===================================
 - Hospedagem: flappyfly.gearhostpreview.com
 - Projeto realizado a partir de outro projeto de um curso de JavaScript e Web Morderno da Cod3r
